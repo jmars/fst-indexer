@@ -1,7 +1,6 @@
 # fst-indexer
 
 [![CI](https://github.com/jmars/fst-indexer/actions/workflows/ci.yml/badge.svg)](https://github.com/jmars/fst-indexer/actions/workflows/ci.yml)
-[![Crates.io](https://img.shields.io/crates/v/fst-indexer)](https://crates.io/crates/fst-indexer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **FST-based full-text indexer** — blazing fast search over text, JSONL, and transcript files using finite state transducers.
@@ -9,7 +8,7 @@
 ## Quick Start
 
 ```bash
-cargo install fst-indexer
+cargo install --git https://github.com/jmars/fst-indexer
 ```
 
 ### Build an Index
@@ -89,7 +88,7 @@ You can use `fst-indexer` as a Rust library dependency in your own project:
 
 ```toml
 [dependencies]
-fst-indexer = "0.1"
+fst-indexer = { git = "https://github.com/jmars/fst-indexer" }
 ```
 
 ```rust
