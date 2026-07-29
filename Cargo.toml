@@ -1,0 +1,19 @@
+[package]
+name = "fst-indexer"
+version = "0.1.0"
+edition = "2021"
+description = "Generic FST-based full-text indexer CLI"
+license = "MIT"
+repository = "https://github.com/jmars/fst-indexer"
+
+[dependencies]
+fst = "0.3"
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+glob = "0.3"
+
+[profile.release]
+opt-level = 3
+lto = true
