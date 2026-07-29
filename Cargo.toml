@@ -2,17 +2,24 @@
 name = "fst-indexer"
 version = "0.1.0"
 edition = "2021"
-description = "Generic FST-based full-text indexer CLI"
+description = "Blazing-fast full-text search indexer built on finite state transducers"
 license = "MIT"
 repository = "https://github.com/jmars/fst-indexer"
+readme = "README.md"
+documentation = "https://docs.rs/fst-indexer"
+keywords = ["fst", "full-text-search", "indexer", "cli", "search"]
+categories = ["command-line-utilities", "text-processing"]
 
 [dependencies]
-fst = "0.3"
+fst = "0.4"
 clap = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 anyhow = "1"
 glob = "0.3"
+
+[dev-dependencies]
+tempfile = "3"
 
 [profile.release]
 opt-level = 3
