@@ -48,6 +48,8 @@ enum Command {
 enum ExtractorType {
     /// JSONL files: each JSON line is parsed; 'content' field used if present, else whole line
     Jsonl,
+    /// Notification JSONL: extracts 'summary' and 'body' fields (same as Jsonl for indexing)
+    Notification,
     /// Plain text files: each line is one entry
     Txt,
     /// Tactiq transcript .txt files: speaker turns parsed and indexed
@@ -98,7 +100,7 @@ fn cmd_build(dir: &Path, pattern: &str, extractor: &ExtractorType, output: &Path
             .to_string();
 
         let (file_entry, extracted_entries) = match extractor {
-            ExtractorType::Jsonl => extract_jsonl(filepath, &filename)?,
+            ExtractorType::Jsonl | ExtractorType::Notification => extract_jsonl(filepath, &filename)?,
             ExtractorType::Txt => extract_txt(filepath, &filename)?,
             ExtractorType::Transcript => extract_transcript(filepath, &filename)?,
         };
@@ -188,8 +190,19 @@ fn extract_txt(path: &Path, filename: &str) -> Result<(FileEntry, Vec<String>)> 
 }
 
 fn extract_transcript(path: &Path, filename: &str) -> Result<(FileEntry, Vec<String>)> {
-    let content = std::fs::read_to_string(path)
-        .with_context(|| format!("Reading {}", path.display()))?;
+    // Reject binary files (e.g., .docx) — transcripts must be valid UTF-8 text
+    let content = match std::fs::read_to_string(path) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("Skipping non-UTF-8 file {}: {}", path.display(), e);
+            return Ok((FileEntry {
+                filename: filename.to_string(),
+                title: filename.to_string(),
+                date: date_from_path(path),
+                source: "transcript".into(),
+            }, vec![]));
+        }
+    };
     let parsed = parse_transcript(&content);
 
     let date = parsed
@@ -498,7 +511,8 @@ fn parse_transcript(text: &str) -> Transcript {
         }
         if let Some(v) = l.strip_prefix("Date:") {
             if meeting_date.is_none() {
-                meeting_date = Some(v.trim()[..10].to_string());
+                let v = v.trim();
+                meeting_date = Some(if v.len() >= 10 { v[..10].to_string() } else { v.to_string() });
             }
         }
     }
